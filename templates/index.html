@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Галерея </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Шапка */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Форма загрузки */
+        .upload-section {
+            padding: 30px;
+            background: #f8f9ff;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: block;
+            background: white;
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-label:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .file-list {
+            width: 100%;
+            max-width: 500px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .remove-btn {
+            color: #ff4757;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Галерея */
+        .gallery-section {
+            padding: 30px;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .image-count {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .image-card {
+            background: white;
+            border-radius: 10px;
+        overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .image-info {
+            padding: 15px;
+        }
+
+        .image-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .image-size {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .delete-form {
+            margin-top: 10px;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .delete-btn:hover {
+            background: #ff3742;
+        }
+
+        /* Если нет изображений */
+        .empty-gallery {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-section, .gallery-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <header>
+            <h1> Галерея</h1>
+            <p class="subtitle">Загружайте и просматривайте изображения</p>
+        </header>
+
+        <!-- Форма загрузки -->
+        <section class="upload-section">
+            <form class="upload-form" action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="file-input-wrapper">
+                    <input type="file" name="files[]" multiple accept="image/*" class="file-input" id="fileInput" onchange="showFiles()">
+                    <label for="fileInput" class="file-label">
+                        <div class="upload-icon">📁</div>
+                        <h3>Нажмите или перетащите файлы</h3>
+                        <p>Поддерживаются: JPG, PNG, GIF, WebP, BMP</p>
+                    </label>
+                </div>
+
+                <div id="fileList" class="file-list" style="display: none;"></div>
+
+                <button type="submit" class="upload-btn" id="uploadBtn" disabled>
+                    Загрузить выбранные файлы
+                </button>
+            </form>
+        </section>
+
+        <!-- Галерея -->
+        <section class="gallery-section">
+            <div class="gallery-header">
+                <h2> Все изображения</h2>
+                <div class="image-count">{{ images|length }} фото</div>
+            </div>
+
+            {% if images %}
+            <div class="gallery">
+                {% for image in images %}
+                <div class="image-card">
+                    <img src="{{ url_for('static', filename=image.path) }}"
+                         alt="{{ image.name }}"
+                         class="image-preview"
+                         loading="lazy">
+
+                    <div class="image-info">
+                        <div class="image-name" title="{{ image.name }}">
+                            {{ image.name|truncate(30) }}
+                        </div>
+                        <div class="image-size">
+                            {{ (image.size/1024)|round(1) }} KB
+                        </div>
+
+                        <form class="delete-form" method="POST" action="/delete"
+                              onsubmit="return confirm('Удалить это изображение?')">
+                            <input type="hidden" name="filename" value="{{ image.name }}">
+                            <button type="submit" class="delete-btn">🗑️ Удалить</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-gallery">
+                <div class="empty-icon"></div>
+                <h3>Нет изображений</h3>
+                <p>Загрузите первые изображения через форму выше</p>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <script>
+        // Показывать выбранные файлы
+        function showFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            if (fileInput.files.length > 0) {
+                fileList.style.display = 'block';
+                fileList.innerHTML = '';
+
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    const div = document.createElement('div');
+                    div.className = 'file-item';
+                    div.innerHTML = `
+                        <span> ${file.name} (${(file.size/1024).toFixed(1)} KB)</span>
+                        <button type="button" class="remove-btn" onclick="removeFile(${i})">✗</button>
+                    `;
+                    fileList.appendChild(div);
+                }
+
+                uploadBtn.disabled = false;
+            } else {
+                fileList.style.display = 'none';
+                uploadBtn.disabled = true;
+            }
+        }
+
+        // Удалить файл из списка выбранных
+        function removeFile(index) {
+            const fileInput = document.getElementById('fileInput');
+            const dt = new DataTransfer();
+
+            // Копируем все файлы кроме удаляемого
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(fileInput.files[i]);
+                }
+            }
+
+            fileInput.files = dt.files;
+            showFiles();
+        }
+
+        // Drag and drop
+        const dropArea = document.querySelector('.file-label');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.style.background = '#f0f2ff';
+                dropArea.style.borderColor = '#764ba2';
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.style.background = 'white';
+                dropArea.style.borderColor = '#667eea';
+            }, false);
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            const fileInput = document.getElementById('fileInput');
+
+            // Если уже есть выбранные файлы, добавляем новые
+            const dt2 = new DataTransfer();
+
+            // Копируем существующие
+            for (let i = 0; i < fileInput.files.length; i++) {
+                dt2.items.add(fileInput.files[i]);
+            }
+
+            // Добавляем перетащенные
+            for (let i = 0; i < files.length; i++) {
+                dt2.items.add(files[i]);
+            }
+
+            fileInput.files = dt2.files;
+            showFiles();
+        }, false);
+
+        // Показать выбранные файлы при загрузке страницы
+        document.addEventListener('DOMContentLoaded', showFiles);
+    </script>
+</body>
+</html>
